@@ -91,6 +91,12 @@ export default function DashboardIndex() {
   })));
 
   useEffect(() => {
+    if (fetcher.data?.issues) {
+      setEffIssues(fetcher.data.issues.map(i => ({ ...i, new: false })));
+    }
+  }, [fetcher.data?.issues]);
+
+  useEffect(() => {
     async function init() {
       try {
         const r = await fetch("/manual-fetch", {
