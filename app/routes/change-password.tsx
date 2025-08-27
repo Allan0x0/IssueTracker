@@ -72,7 +72,7 @@ export default function ChangePasswordPage() {
 
   return (
     <div className="flex flex-col justify-center items-center p-6">
-      <div className="flex flex-col items-stretch max-w-4xl bg-white rounded-md p-6">
+      <div className="flex flex-col items-stretch w-full md:w-auto md:max-w-4xl md:min-w-2xl bg-white rounded-md p-6">
         <div className="flex flex-row items-center gap-2">
           <h1 className="text-xl font-semibold">Change My Password</h1>
           <div className='grow' />
@@ -80,7 +80,7 @@ export default function ChangePasswordPage() {
             Back
           </button>
         </div>
-        <fetcher.Form method="post" className="flex flex-col items-stretch pt-16 gap-2 max-w-4xl min-w-2xl">
+        <fetcher.Form method="post" className="flex flex-col items-stretch pt-16 gap-2">
           <Input type="password" name="currentPassword" label="Current Password" required />
           <Input type="password" name="newPassword" label="New Password" required />
           <Input type="password" name="reEnterPassword" label="Re-Enter New Password" required />

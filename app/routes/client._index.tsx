@@ -48,7 +48,7 @@ export default function ClientIndex() {
       <div className="flex flex-row items-center gap-2">
         <h1 className="text-xl font-semibold">Employee - Dashboard</h1>
         <div className='grow' />
-        <span className="text-xl text-stone-400 font-semibold">{fullName}</span>
+        <span className="hidden md:flex text-xl text-stone-400 font-semibold">{fullName}</span>
       </div>
       <div className="flex flex-col items-stretch py-16 gap-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -56,7 +56,7 @@ export default function ClientIndex() {
           <StatCard label="Total Resolved" value={numResolved} labelClassName="text-green-600" />
         </div>
         <div className="flex flex-col items-stretch py-4 gap-2">
-          <fetcher.Form method="get" className="flex flex-row items-center gap-2">
+          <fetcher.Form method="get" className="flex flex-col md:flex-row items-center gap-2 py-4 md:py-0">
             <span className="font-semibold text-lg">My Issues</span>
             <div className='grow' />
             <input type="search" name="search" placeholder="Search" className="border border-stone-400 rounded-md px-4 py-2" />

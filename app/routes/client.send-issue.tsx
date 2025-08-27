@@ -62,7 +62,7 @@ export default function SendIssuePage() {
   return (
     <div className="flex flex-col items-start">
       <h1 className="text-xl font-semibold">Employee - Send Issue</h1>
-      <fetcher.Form method="post" className="flex flex-col items-stretch py-16 gap-2 max-w-4xl min-w-2xl">
+      <fetcher.Form method="post" className="flex flex-col items-stretch py-16 gap-2 w-full md:w-auto md:max-w-4xl md:min-w-2xl">
         <Select name="issueTypeId" label="Select Type of Issue" required>
           <option value="">-- Select Type of Issue --</option>
           {issueTypes.map(i => (
