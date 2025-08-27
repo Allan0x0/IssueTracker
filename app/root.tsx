@@ -5,10 +5,12 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { getUser } from "./sessions.server";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -23,7 +25,21 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export function meta({ }: Route.MetaArgs) {
+  return [
+    { title: "Parking Issues Tracker" },
+    { name: "description", content: "Parking Issues Tracker" },
+  ];
+}
+
+export async function loader ({ request }: Route.LoaderArgs) {
+  const user = await getUser(request);
+  return { user };
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  useLoaderData();
+
   return (
     <html lang="en">
       <head>
@@ -32,7 +48,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className="bg-stone-200">
         {children}
         <ScrollRestoration />
         <Scripts />

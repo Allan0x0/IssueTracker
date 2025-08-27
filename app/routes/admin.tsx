@@ -1,0 +1,59 @@
+import type { ComponentProps } from "react";
+import { NavLink, Outlet, redirect, useLoaderData } from "react-router";
+import { twMerge } from "tailwind-merge";
+import { AppLinks } from "~/links";
+import { requireUser } from "~/sessions.server";
+import type { Route } from "./+types/_index";
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const currentUser = await requireUser(request);
+  if (!currentUser.isAdmin) {
+    return redirect(AppLinks.Client.Index);
+  }
+  return null
+}
+
+export default function Dashboard() {
+  useLoaderData();
+
+  return (
+    <div className="flex flex-row items-stretch gap-6 p-6 h-screen">
+      <div className="flex flex-col items-stretch bg-white rounded-md p-6 shadow-xl shrink-0">
+        <h1 className="text-xl font-semibold">Parking Issue Tracker</h1>
+        <div className="flex flex-col items-stretch pt-16 gap-4 grow">
+          <NavItem to={AppLinks.Admin.Index} end>Dashboard</NavItem>
+          <NavItem to={AppLinks.Admin.Employees.Index}>Employees</NavItem>
+          <div className='grow' />
+          <NavItem to={AppLinks.ChangePassword}>Change My Password</NavItem>
+          <form method="post" action={AppLinks.Logout} className="flex flex-col items-stretch">
+            <button type="submit" className={getBaseButtonClx()}>Log Out</button>
+          </form>
+        </div>
+      </div>
+      <div className="flex flex-col items-stretch bg-white rounded-md grow shadow-xl p-6 overflow-auto">
+        <Outlet />
+      </div>
+    </div>
+  )
+}
+
+function getBaseButtonClx () {
+  return twMerge("bg-blue-50 rounded-md px-6 py-4 hover:bg-blue-100 text-left cursor-pointer");
+}
+
+interface NavItemProps extends ComponentProps<typeof NavLink> {
+}
+function NavItem(props: NavItemProps) {
+  const { to, className, children, ...rest } = props;
+  return (
+    <NavLink
+      to={to}
+      className={({ isActive }) => {
+        return twMerge(getBaseButtonClx(), isActive && "bg-blue-600 text-white hover:bg-blue-600");
+      }}
+      {...rest}
+    >
+      {children}
+    </NavLink>
+  )
+}
