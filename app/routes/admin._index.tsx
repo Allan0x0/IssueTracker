@@ -2,7 +2,7 @@ import prisma from "~/db.server"
 import type { Route } from "./+types/admin"
 import { useFetcher, useLoaderData } from "react-router";
 import { IssueStatus } from "~/issues";
-import { useEffect, type ComponentProps } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 import dayjs from "dayjs";
 import { twMerge } from "tailwind-merge";
 import { getRawFormFields } from "~/utils.server";
@@ -83,6 +83,47 @@ export default function DashboardIndex() {
     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
   });
 
+  const [lastChecked, setLastChecked] = useState(new Date());
+
+  const [effIssues, setEffIssues] = useState(finalIssues.map(i => ({
+    ...i,
+    new: false
+  })));
+
+  useEffect(() => {
+    async function init() {
+      try {
+        const r = await fetch("/manual-fetch", {
+          method: "post",
+          body: JSON.stringify({ lastChecked })
+        }).then(r => r.json());
+
+        if (hasErr(r)) {
+          window.alert("Error: " + r.err);
+        }
+        console.log("r", r);
+        if (r.newIssues.length) {
+          setEffIssues(prev => [
+            ...r.newIssues.map((i: any) => ({
+              ...i,
+              new: true,
+            })),
+            ...prev,
+          ]);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLastChecked(new Date());
+      }
+    }
+    const t = setTimeout(() => {
+      console.log("Checking...");
+      init();
+    }, 1000 * 20);
+    return () => clearTimeout(t);
+  }, [lastChecked]);
+
   return (
     <div className="flex flex-col items-stretch">
       <h1 className="text-xl font-semibold">Admin - Dashboard</h1>
@@ -112,10 +153,10 @@ export default function DashboardIndex() {
               </tr>
             </thead>
             <tbody>
-              {finalIssues.map(issue => (
-                <IssueItem key={issue.id} {...issue} />
+              {effIssues.map(issue => (
+                <IssueItem key={issue.id} {...issue} new={issue.new} />
               ))}
-              {!finalIssues.length && (
+              {!effIssues.length && (
                 <tr>
                   <Td colSpan={5}>No issues found</Td>
                 </tr>
@@ -135,6 +176,7 @@ interface IssueItemProps {
   issueType: { identifier: string };
   description: string;
   status: string;
+  new?: boolean;
 }
 export function IssueItem(issue: IssueItemProps) {
   const fetcher = useFetcher<typeof action>();
@@ -150,11 +192,20 @@ export function IssueItem(issue: IssueItemProps) {
   }, [fetcher.data]);
 
   return (
-    <tr key={issue.id}>
+    <tr key={issue.id} className={twMerge(issue.new && "bg-green-50")}>
       <Td>{dayjs(issue.createdAt).format("YYYY/MM/DD HH:mm")}</Td>
       <Td>{issue.user.username}</Td>
       <Td>{issue.issueType.identifier}</Td>
-      <Td width="40%">{issue.description}</Td>
+      <Td width="40%">
+        <div className="flex flex-row items-center gap-2">
+          <span>{issue.description}</span>
+          {issue.new && (
+            <div className="flex flex-col justify-center items-center rounded-full px-4 py-1 bg-green-400 text-white text-sm">
+              New
+            </div>
+          )}
+        </div>
+      </Td>
       <Td>
         <span className={twMerge("text-orange-400", issue.status === IssueStatus.Resolved && "text-green-600")}>
           {issue.status}

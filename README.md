@@ -1,3 +1,6 @@
+Notify admin when new issue is reported.
+Highlight new issues to admin as they are submitted so admin can attend to them instantly.
+
 # Welcome to React Router!
 
 A modern, production-ready template for building full-stack React applications using React Router.

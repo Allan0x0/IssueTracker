@@ -1,5 +1,5 @@
 import dayjs from "dayjs";
-import { type ComponentProps } from "react";
+import { useEffect, useState, type ComponentProps } from "react";
 import { useFetcher, useLoaderData } from "react-router";
 import { twMerge } from "tailwind-merge";
 import z from "zod";
@@ -8,7 +8,7 @@ import prisma from "~/db.server";
 import { IssueStatus } from "~/issues";
 import { requireUserId } from "~/sessions.server";
 import type { Route } from "./+types/admin";
-import { useUser } from "~/utils";
+import { hasErr, useUser } from "~/utils";
 
 export async function loader({ request }: Route.LoaderArgs) {
   const currentUserId = await requireUserId(request);
